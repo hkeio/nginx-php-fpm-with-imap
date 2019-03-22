@@ -1,0 +1,23 @@
+kind: pipeline
+name: default
+
+volumes:
+- name: docker
+  host:
+    path: /var/run/docker.sock
+
+steps:
+- name: docker
+  image: docker
+  environment:
+    DOCKER_USERNAME:
+      from_secret: docker_username
+    DOCKER_PASSWORD:
+      from_secret: docker_password
+  commands:
+    - docker login --username=$DOCKER_USERNAME --password=$DOCKER_PASSWORD
+    - docker build -t ickx87/nginx-php-fpm-with-imap:latest .
+    - docker push ickx87/nginx-php-fpm-with-imap:latest
+  volumes:
+  - name: docker
+    path: /var/run/docker.sock
